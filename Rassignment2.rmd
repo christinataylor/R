@@ -1,0 +1,92 @@
+---
+title: "RAssignment2"
+author: "Christina Taylor"
+date: "July 8, 2015"
+output: html_document
+---
+
+### Function "fact": Calculate Factoral
+
+**Factoral is defined as n!. The user defined function "fact" accomplishes this calculation. It takes an integer argument x. If x is not an integer, an error message is given.**  
+
+See the code to build the function here: 
+```{r}
+fact<-function(x)
+{
+i<-1
+result<-1
+
+	if (is.numeric(x)==FALSE) 
+	{
+	  print ("you did not enter a number")
+	}
+
+	else if (x==0) 
+	{
+	  return (1)
+	}
+	
+	else if (x%%1==0 && x>0)
+	{
+		for (i in 1:x)
+		{
+		  result<-result*i
+		  i<-i+1
+		}
+		return (result)
+	}
+	
+	else 
+	{
+	  print ("you did not enter an integer")
+	}
+}
+```
+
+See tests and results here:
+```{r}
+fact(0)
+fact(5)
+fact(5.5)
+fact("factoral")
+```
+
+### Function "choo": Evaluate "n choose r"
+**In probability, "n choose r" evaluates to n! / (( n - r)! * r!). The user defined function "choo" accomplishes this calculation. It takes 2 integer arguments, n and r, and return the evaluation. If n or r is not an integer, an error message is given.  If n is less than r, the fucntion evaluates to 0.**
+
+See the code to build the function here: 
+```{r}
+choo<-function(n,r)
+{
+  if (is.numeric(n)==FALSE || is.numeric(r)==FALSE) 
+  {
+    print ("you did not enter numbers")
+  }
+    
+  else if (n%%1==0 && r%%1==0)
+	{
+		if (n >= r)
+		{
+			eval <- fact(n) / fact(r) / fact(n-r) 
+		}
+		else
+		{
+			eval <- 0
+		}	
+		return (eval)
+	}
+	
+  else
+	{
+	  print ("you did not enter integers")
+	}
+}
+```
+
+See tests and results here:
+```{r}
+choo(5,3)
+choo(3,5)
+choo(3.5,5)
+choo("choose")
+```
