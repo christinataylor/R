@@ -1,0 +1,22 @@
+2.16
+	78%/80% = 97.5%
+	
+2.18
+	a) 0.2839
+	b) 0.2503/0.8954 = 27.95%
+	c) 0.0336/0.1046 = 32.12%
+	d) No. Otherwise, b) and c) would have been the same; the data in the first row (0.3145 0.3306 0.2503) would have been the same. 
+	
+2.20
+	a) (108+114-78) / 204 = 70.59%
+	b) 78/114 = 68.42%
+	c) 19/54 = 35.19%; 11/36 = 30.56%
+	d) No. As can be seen from the results of b) and c). If partner's eye color were independent from the respondent's eye color, the probabilities should have been identical.
+
+2.26
+	ID	0.3	MM:	0.5 * 0.3 = 0.15
+					FF:		0.5 * 0.3 = 0.15
+					MM:	0.25 * 0.7 = 0.175
+	FR	0.7	FF:		0.25 * 0.7 = 0.175
+					MF:		0.5 * 0.7 = 0.35
+	P(ID|FF) = P(ID&FF) / P (FF) = 0.15 / (0.15+0.175) = 46.15%
