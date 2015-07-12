@@ -1,0 +1,15 @@
+data<-read.table("http://archive.ics.uci.edu/ml/machine-learning-databases/mushroom/agaricus-lepiota.data", sep=",")
+
+sub <- data[, c(1,2,4,11,12)]
+colnames(sub) <- c("class", "cap.shape", "cap.color", "stalk.shape", "stalk.root")
+
+require(stringr)
+
+sub[,1] <- str_replace_all(str_c(sub[,1]), c("^p$"="poisonous", "^e$"="edible"))
+sub[,2] <- str_replace_all(str_c(sub[,2]), c("^b$"="bell", "^c$"="conical", "^x$"="convex", "^f$"="flat", "^k$"="knobbed", "^s$"="sunken"))
+sub[,3] <- str_replace_all(str_c(sub[,3]), c("^n$"="brown", "^b$"="buff", "^c$"="cinnamon", "^g$"="gray", "^r$"="green", "^p$"="pink", "^u$"="purple", "^e$"="red", "^w$"="white", "^y$"="yellow"))
+sub[,4] <- str_replace_all(str_c(sub[,4]), c("^e$"="enlarging", "^t$"="tapering"))
+sub[,5] <- str_replace_all(str_c(sub[,5]), c("^b$"="bulbous", "^c$"="club", "^u$"="cup", "^e$"="equal", "^z$"="rhizomorphs", "^r$"="rooted", "\\?"="missing"))
+
+head(sub, 10)
+tail(sub,10)
