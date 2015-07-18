@@ -1,0 +1,64 @@
+---
+title: "MathAssignment4"
+author: "Christina"
+date: "July 18, 2015"
+output: html_document
+---
+
+1. The system of equations can be expressed as: \
+a: 
+```{r echo=FALSE}
+matrix(c(1,2,-1,2,1,1,-3,-3,0), nrow=3)
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b:
+```{r echo=FALSE}
+matrix(c(5,13,8))
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;x:
+```{r echo=FALSE}
+matrix(c('x','y','z')) 
+```
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The solutions for x,y,z can be found by solving ax=b \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Matrix a cannot be inverted. In fact, it concains overlapping information: row 1&2 vs. row 3. The system is exactly singular.  
+
+2. The following function sol attempts to provide a solution for the above problem, ax=b.
+```{r}
+sol <- function(a,b) { 
+  if (ncol(a) != nrow(b)){
+    print ("Error: check input matrix dimensions")
+  }
+  else {
+    test <- tryCatch(solve(a,b), error = function(e) e) 
+      if (any(class(test) == "error")){
+        print ("Something went wrong: For example, a may not be inversible")
+      }
+      else {
+        solve (a,b)
+    }
+  }
+}
+```
+&nbsp;&nbsp;&nbsp;&nbsp;Test code:
+```{r}
+a <- matrix(c(1,2,-1,2,1,1,-3,-3,0), nrow=3)
+b <- as.matrix(c(5,13,8))
+sol(a,b)
+```
+3. Manual calculation:  
+``AB[11]=4*1-3*3=-5
+    AB[12]=4*4+3*2=22 
+    AB[21]=-3*1+5*3=12
+    AB[22]=-3*4-5*2=-22 
+    AB[31]=3
+    AB[32]=-2``
+
+```{r echo=FALSE}
+matrix(c(-5,12,3,22,-22,-2), nrow=3)
+```
+
+4. Using R to solve AB:
+```{r}
+A <- matrix(c(4,-3,0,-3,5,1), nrow=3)
+B <- matrix(c(1,3,4,-2), nrow=2)
+A %*% B
+```
