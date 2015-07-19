@@ -1,0 +1,49 @@
+---
+title: "RAssignment4"
+author: "Christina"
+date: "July 18, 2015"
+output: html_document
+---
+
+Mtcars Dataset: It was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 other aspects of 32 automobiles' performance.
+
+```{r}
+#load data
+library(datasets)
+data(mtcars)
+```
+Dataset at a glance:
+```{r}
+#identify variable type
+str(mtcars)
+#generate summary level description
+summary(mtcars)
+```
+
+Histrogram of mileage per gallon distribution:
+The graph shows the frequency distribution of fuel efficiency.
+```{r, message=FALSE, echo=FALSE}
+require(ggplot2)
+require(scales)
+require(ggthemes)
+g1<-ggplot(mtcars) + geom_histogram(aes(x=mpg),fill="grey50")
+g1<-g1+labs(title="fuel efficiency distribution", x="miles/gallon", y="number of cars")
+g1+theme_tufte()
+```
+
+Boxplot of gross horsepower distribution by number of cylinders:\
+The graph shows the variance of engine performance. More cylinders suggests more powerful engines. 
+```{r, message=FALSE, echo=FALSE}
+g2<-ggplot(mtcars, aes(x=as.factor(cyl),y=hp))+geom_boxplot()
+g2<-g2+labs(title="engine performance distribution", x="number of cylinders", y="gross horse power")
+g2+theme_tufte()
+```
+\
+Scatterplot of horsepower and mileage per gallon colored by number of cylinders:\
+The graph shows a negative correlation between engine performance and fuel consumption. 
+```{r, message=FALSE, echo=FALSE}
+g3<-ggplot(mtcars, aes(x=mpg,y=hp))
+g3<-g3+geom_point(aes(color=cyl))
+g3<-g3+labs(title="engine performance vs. fuel efficiency", x="miles/gallon", y="gross horse power", color="number of cylinders")
+g3+theme_tufte()
+```
