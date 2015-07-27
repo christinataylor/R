@@ -1,0 +1,109 @@
+---
+title: "Hflights Data Analysis"
+author: "Christina"
+date: "July 19, 2015"
+output: html_document
+---
+
+**I want to choose the travel time and airline smartly, so I have the best chance to avoid delays and arrive at my destination in time. So I analyzed the hflight data with the KPI Arrival Delay:**  
+
+```{r message=FALSE}
+#load data
+library("hflights")
+
+#change column data type
+hflights$UniqueCarrier<-as.factor(hflights$UniqueCarrier)
+hflights$DayOfWeek<-as.factor(hflights$DayOfWeek)
+
+#create and append departure time field
+FlightDate<-paste(hflights$Year, hflights$Month, hflights$DayofMonth,sep="-")
+data<-cbind(hflights,FlightDate)
+
+#select rows where flights are delayed
+del<-data[which(data$ArrDelay >0),-(1:3)]
+
+#subset columns of interest
+sub<-subset(del, select=c(DayOfWeek,UniqueCarrier,ArrDelay,DepDelay,AirTime,FlightDate))
+
+#summary statistics for data analysis
+summary(sub)
+```
+
+**1. Histogram of Arrival Delays by day of week:**  
+
+```{r, message=FALSE}
+#qplot(UniqueCarrier, data=sub, geom="bar", fill=DayOfWeek)
+#ggplot(sub, aes(UniqueCarrier)) + geom_freqpoly(aes(group = DayOfWeek, colour = DayOfWeek))
+#Stacked bars are easy, but might be overloaded with information. Faceting might be a better solution.
+```
+```{r, message=FALSE, echo=FALSE}
+require(ggplot2)
+require(ggthemes)
+require(scales)
+g1<-ggplot(sub, aes(DayOfWeek, fill="red")) + geom_bar() + facet_wrap(~ UniqueCarrier)
+g1<-g1+labs(title="Flight Delays by Day/Airline", x="Day of Week", y="Number of Delayed Flights") 
+g1+theme_gdocs()+guides(fill=FALSE)
+```
+\
+\
+Congestion tends to happen during weekend and mid week, although there are viarations for airlines with smaller volume.\
+\
+\
+**2. Boxplot of Delay Time by airline:**  
+```{r, message=FALSE, echo=FALSE}
+g2<-ggplot(sub, aes(x=UniqueCarrier,y=ArrDelay))+geom_boxplot()
+g2<-g2+labs(title="Delay Time by Airline", x="Airline", y="Delay Time (min)")
+g2+theme_gdocs()
+```
+\
+\
+Most of the delays are short (mean = 24 min), although there are significant outliers with certain airlines. \
+\
+\
+**3. Evaluate airline performance:**   
+Simply counting the frequency of delayed flights per airline is misleading, as bigger outlines represent majority of flights and likely most of the delays. Therefore, I created calculated fields for analysis:   
+```{r, message=FALSE}
+#calculate number of delayed flights by carrier
+library("sqldf")
+ucd<-sqldf("select UniqueCarrier, count(ArrDelay) as delays from hflights where ArrDelay >0 group by UniqueCarrier")
+
+#calculate number of total flights by carrier, if arrival information exists
+uc<-sqldf("select UniqueCarrier, count(ArrDelay) as flights from hflights where ArrDelay is not null group by UniqueCarrier")
+
+#merge the results and create calculated field: %of delayed flights
+library(dplyr)
+stats<-merge(ucd,uc,all=TRUE)
+ratio<-with(stats, 100*delays/flights)
+stats<-cbind(stats,ratio)
+stats
+```
+\
+Bar chart of percentage of delayed flights, organized by airline size; number of flights labeled: \
+```{r, message=FALSE, echo=FALSE}
+g3<-ggplot(stats, aes(x=(reorder(UniqueCarrier,-flights)),y=ratio, fill = ratio)) + scale_fill_gradient2(high=muted("red")) + geom_bar(stat = "identity") + geom_text(size=3, data=stats, aes(label = flights), hjust=0) + coord_flip() 
+g3<-g3+labs(title="Flight Delays", x="Airline (smallest top)", y="Delay Rate", fill="Delay Rate")
+g3+theme_gdocs()
+```
+\
+\
+AA has the lowest arrival delay rate while F9 the highest. Notice that from a certain point on, flight delay rate tend to increase as the volume of flights grows. This can also be seen in the following scatter plot:
+\
+```{r, message=FALSE, echo=FALSE}
+g4<-ggplot(stats, aes(x=flights,y=ratio))+geom_point(aes(color=UniqueCarrier))+geom_text(size=3, data=stats, aes(label = UniqueCarrier), hjust=0)
+g4<-g4+labs(title="Flights Volume vs. Delay Rate", x="Airline Size", y="Delay Rate")
+g4+theme_gdocs()+guides(color=FALSE)
+```
+
+\
+\
+**4. (Is it obvious?) Scatter plot of arrival delay and departure delay colored by airline:**    
+```{r, message=FALSE, echo=FALSE}
+g5<-ggplot(sub, aes(x=DepDelay,y=ArrDelay))
+g5<-g5+geom_point(aes(color=UniqueCarrier))
+g5<-g5+labs(title="Arrival vs. Departure Delay", x="Departure Delay (min)", y="Arrival Delay (min)", color="Airline")
+g5+theme_gdocs()
+```
+\
+There is strong positive correlation between departure delays and arrival delays, suggesting airport congestion rather than flight time likely caused the delay.  
+\
+**My conclusion is that I want to avoid weekends; Tuesday/Thursday may be best. I would also choose to fly US, FL, or AA - they have decent number of flights but low delay rate.**

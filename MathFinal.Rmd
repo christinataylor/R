@@ -1,0 +1,101 @@
+---
+title: "MathFinal"
+author: "Christina"
+date: "July 26, 2015"
+output: html_document
+---
+## Data Science Math and Google Page Rank Algorithm 
+#### *A rudimentary introduction*    
+### Background: Eigenvectors
+Eigenvectors give simple and elegant solutions to linear transformation models. For example, consider the system of linear differential equations:
+dx/dt=ax+by  
+dydt=cx+dy  
+\
+Solving this system directly is complicated.  Instead of working with x and y, we could subsitute the variables with z and w, which depend linearly on x and y:  
+z=αx+βy  
+w=γx+δy  
+\
+And the system can be transformed into:   
+dz/dt=κz  
+dw/dt=λw  
+\
+We are now solving two independent functions: z=Aeκt, and w=Beλt.  
+Then we can use the formulas for z and w to find expressions for x and y.  
+The problem amounts to finding two linearly independent eigenvectors for the following matrix:  
+```{r, echo=FALSE}
+m <- matrix(c('a','b','c','d'),2,2)
+noquote(m)
+```
+z and w correspond to the eigenvectors, and κ and λ to the eigenvalues.  
+\
+### Google Page Rank Algorithm and Linear Algebra  
+
+Suppose we have 4 websites referencing each other in following manner:  
+
+When web site i references j, we add a directed arrow between i and j. Page 1 links to all of the other pages, so node 1 has outgoing arrows to all other nodes. Page 3 has only one link, to Page 1. Therefore node 3 has one outgoing arrow to node 1.  
+Node 1 has 3 outgoing arrrows, so it passes on its "importance"" to each of the other 3 nodes. Node 3 has only one outgoing arrow, so it passes all of its importance to node 1.  
+Assigning weights to each arrow, we get the following diagram:  
+![](C:\Users\Christina\Documents\GitHub\R\rank.jpg)  
+
+Set matrix A as:
+```{r, echo=FALSE}
+A <- matrix(c(0, 1/3, 1/3, 1/3, 0, 0, 1/2, 1/2, 1, 0, 0,0 , 1/2, 0, 1/2, 0), ncol=4, nrow=4)
+A
+```
+and rank vector v0 as:  
+```{r, echo=FALSE}
+v0 <- matrix(c('x1','x2','x3','x4'))
+noquote(v0)
+```
+The situation at each node can be represented by: Av = v  
+To solve the above linear system, we can find the eigenfactors corresponding to the eigenvalue 1. 
+```{r message=FALSE}
+e <- eigen(A)
+v <- e$vectors
+d <- e$values
+```
+Eigenvectors: 
+```{r}
+v
+```  
+Eigenvalues: 
+```{r}
+d
+```  
+\
+The eigenvectors corresponding to the eigenvalue 1 are of the form
+```{r message=FALSE, echo=FALSE}
+matrix(Re(v[,1]))
+```
+
+Since page rank reflects relative importance of the nodes, and eigenvectors are  scalar multiples of each other, we choose v\* to be the unique eigenvector with the sum of all entries equal to 1. v\* is also known as probabilistic eigenvector corresponding to the eigenvalue 1.  Therefore, 
+```{r, echo=FALSE}
+vr <- matrix(c(0.38,0.12,0.29,0.19))
+noquote(vr)
+```
+is our Page Rank factor.  
+  
+  
+#### Note
+From a probability point of view, initially the "importance" is evenly distributed among the 4 nodes, each getting ¼. All entries in v, the initial rank vector, is equal to ¼. Each incoming link increases the importance of a web page, so after iteration 1, we update the rank of each page by adding importance of the incoming links. This is the same as multiplying the matrix A with v . At iteration 1, the new importance vector is v1 = Av. At ieteration 2, the updated importance vector is v2 = A(Av) = A2v. The sequences of iterates v, Av, ..., Akv tends to the equilibrium value v* = Equilibrium vector. We call this the Page Rank vector of our web graph.
+  
+
+### Damping factor, power method, and beyond  
+#### Damping factor
+Given the heterogeneous nature of the web, not all sites can be connected, and not all pages contain outgoing links. To overcome these challenges, we introduce the damping factor p (a positive constant between 0 and 1, typically 0.15).  
+The page rank matrix M models the random surfer model: Mostly A surfer follows the outgoing links and moves on to one of the neighbors. A smaller, but positive percentage of the time, the surfer dumps the current page, chooses a different page randomly, and "teleport" there. The damping factor p is the probability that the surfer leaves the current page and "teleports" to a new one.   
+M is given as:  
+![](C:\Users\Christina\Documents\GitHub\R\M.jpg)
+
+
+#### Power Method
+Works for positive, column stochastic (each column summing to 1) matrices. It is much more easier and faster, starting from the vector with all entries 1, to multiply x, Mx,..., Mnx until convergence, than it is to compute the eigenvectors of M. Often, as in the case of our example here, we need only to compute the first couple of iterates to get a good approximation of the Page Rank vector.
+  
+
+*Above is my very basic understanding of eigenvectors/eigenvalues as well as the Google page rank algorithm. Look forward to delving deeper in data science math and its practical applications.*   
+  
+
+#### References:  
+http://www.math.cornell.edu/~mec/Winter2009/RalucaRemus  
+http://www.statpower.net/Content/319SEM/Lecture%20Notes/Eigenvalues.pdf  
+http://www4.ncsu.edu/~ipsen/ps/slides_man.pdf
