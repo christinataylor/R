@@ -9,7 +9,7 @@ output: html_document
 ### Background: Eigenvectors
 Eigenvectors give simple and elegant solutions to linear transformation models. For example, consider the system of linear differential equations:
 dx/dt=ax+by  
-dydt=cx+dy  
+dy/dt=cx+dy  
 \
 Solving this system directly is complicated.  Instead of working with x and y, we could subsitute the variables with z and w, which depend linearly on x and y:  
 z=αx+βy  
@@ -35,7 +35,7 @@ Suppose we have 4 websites referencing each other in following manner:
 When web site i references j, we add a directed arrow between i and j. Page 1 links to all of the other pages, so node 1 has outgoing arrows to all other nodes. Page 3 has only one link, to Page 1. Therefore node 3 has one outgoing arrow to node 1.  
 Node 1 has 3 outgoing arrrows, so it passes on its "importance"" to each of the other 3 nodes. Node 3 has only one outgoing arrow, so it passes all of its importance to node 1.  
 Assigning weights to each arrow, we get the following diagram:  
-![](C:\Users\Christina\Documents\GitHub\R\rank.jpg)  
+![](.\rank.jpg)  
 
 Set matrix A as:
 ```{r, echo=FALSE}
@@ -85,7 +85,7 @@ From a probability point of view, initially the "importance" is evenly distribut
 Given the heterogeneous nature of the web, not all sites can be connected, and not all pages contain outgoing links. To overcome these challenges, we introduce the damping factor p (a positive constant between 0 and 1, typically 0.15).  
 The page rank matrix M models the random surfer model: Mostly A surfer follows the outgoing links and moves on to one of the neighbors. A smaller, but positive percentage of the time, the surfer dumps the current page, chooses a different page randomly, and "teleport" there. The damping factor p is the probability that the surfer leaves the current page and "teleports" to a new one.   
 M is given as:  
-![](C:\Users\Christina\Documents\GitHub\R\M.jpg)
+![](.\M.jpg)
 
 
 #### Power Method
